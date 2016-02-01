@@ -1,7 +1,11 @@
 #######################
-# two ways to get a docker linux image with wsrep packages.
+# two ways to get a docker linux image with wsrep packages:
+# build or pull
 #######################
-# 1. build your own docker os image based the Dockerfile you provided.
+###
+ 1. build
+    build your own docker os image based the Dockerfile you provided.
+###
 # build:
 docker build -t ubuntu:galera-node1 ./
 docker build -t ubuntu:galera-node2 ./ # update the container tag to distinguish them
@@ -12,17 +16,25 @@ docker run --detach=true --name node1 -h node1 ubuntu:galera-node1 --wsrep-clust
 docker run --detach=true --name node2 -h node2 ubuntu:galera-node2 --wsrep-cluster-name=local-test --wsrep-cluster-address=gcomm://node1
 docker run --detach=true --name node3 -h node3 ubuntu:galera-node3 --wsrep-cluster-name=local-test --wsrep-cluster-address=gcomm://node1
 
-# verify number of nodes in the cluster:
-docker exec -ti node1 mysql -e 'show status like "wsrep_cluster_size"'
 
-
-
-
-#######################
-# 2. pull a pre-build one, such as
+###
+ 2. pull
+    pull a pre-build one
+###
 docker pull erkules/galera:basic
 
 # run the following commands in order to create a 3 node cluster.
 docker run --detach=true --name node1 -h node1 erkules/galera:basic --wsrep-cluster-name=local-test --wsrep-cluster-address=gcomm://
 docker run --detach=true --name node2 -h node2 --link node1:node1 erkules/galera:basic --wsrep-cluster-name=local-test --wsrep-cluster-address=gcomm://node1
 docker run --detach=true --name node3 -h node3 --link node1:node1 erkules/galera:basic --wsrep-cluster-name=local-test --wsrep-cluster-address=gcomm://node1
+
+
+#######################
+# verify number of nodes in the cluster:
+docker exec -ti node1 mysql -e 'show status like "wsrep_cluster_size"'
+
+# more docker commands:
+docker stop node1
+docker stop node3
+docker stop node3
+
